@@ -1,0 +1,94 @@
+
+int findRoute(vector<Node> v,int n){
+     //cout<<"dentro funzione"<<endl;
+    vector<Node>::iterator it;
+    Node tmp =  Node(n,false);
+    it = find(v.begin(),v.end(),tmp); // fisso il nodo di partenza
+    int iFound = distance(v.begin(),it);
+    //cout<<"parto dal nodo in posizione "<<iFound<<endl;
+    if(it == v.end()) return -1; // se non esiste proprio la casa return -1;
+    
+    vector<stackNode> stack;
+    stackNode s;
+    s.val = v[iFound].val;
+    s.vIndex = iFound;
+    s.sFrom = -1;
+    s.dist = 0;
+    stack.push_back(s);
+    
+    //cout<<"stack iniziale: ";
+    //printStack(stack);
+    int f = 0;
+    do{
+       // printStack(stack);
+        Node first = v[stack[f].vIndex];
+        for(int i = 0; i<first.parents.size();i++){
+            int fr = first.from;
+            int from2 = -1;
+            if(fr != -1) from2 = stack[fr].sFrom;
+            
+            if(fr != -1 && (first.val == 1 && v[stack[fr].vIndex]  == v[first.parents[i]])){} //{cout<<"esco per val  = 1 e io = mio nonno"<<endl;}
+            else if(fr != -1 && (v[stack[fr].vIndex] == v[first.parents[i]] && first.past == false)){}//{ cout<<"f= "<<f<<" from: "<< stack[fr].val<<" io: "<< first.val<<" figlio: "<<v[first.parents[i]].val<<endl;} // io non sono pasticceria e mio figlio == mio padre
+            else if(from2 != -1 && (first == v[stack[from2].vIndex] && v[stack[fr].vIndex]  == v[first.parents[i]])){
+                
+                // cout<<"esco per io = mio nonno e mio padre = suo nonno(loop)"<<endl;
+                
+                
+                
+            }
+            
+            else{ //inserisco i parents
+                if(v[first.parents[i]].val  == 1){ //ho trovato il nodo 1
+                    //iniziamo il percorso a ritroso
+                    // cout<<"inizio percorso a ritroso"<<endl;
+    //v[first.parents[i]].from = f;
+                    int from = f;
+                    //cout<<v[first.parents[i]].val<<"->";
+                    bool pasticc = false;
+                    int count = 0;
+                    while(from != -1) {
+                        //  cout<<stack[from].val<<"->";
+                        if(v[stack[from].vIndex].past) {/*cout<<"i numero "<<stack[from].val <<"è pasticceria "<<endl;*/ pasticc = true;}
+                        from = stack[from].sFrom;
+                        count++;
+                    }
+                    // cout<<"fuori while"<<endl;
+                    // cout<<stack[first.from].val<<endl;
+                    // cout<<endl;
+                    if(pasticc) return count;
+                }
+                
+                //else automatico
+                //cout<<"else if"<<endl;
+                /* int it;
+                 cout<<"cerco il parent: "<<v[first.parents[i]].val<<endl;
+                 it = find1(stack,v[first.parents[i]]);
+                 if(it != -1) cout<<stack[it].val<<endl;
+                 else cout<<"non trovato"<<endl;*/
+                //if(first.past == false && find1(stack, v[first.parents[i]],stack[f].dist) != -1) {}//cout<<"non inserisco"<<endl;}
+                //else{
+//v[first.parents[i]].from = f;
+                    //cout<<"settato from "<<stack[f].val<<endl;
+                
+                
+                  //  v[first.parents[i]].dist = stack[f].dist + 1;
+                    stackNode s;
+                    s.val = v[first.parents[i]].val;
+                    s.vIndex = first.parents[i];
+                    s.sFrom = f;
+                    s.dist = stack[f].dist+1;
+                    stack.push_back(s);
+                    
+                //}
+            }
+            //cout<<"fine for"<<endl;
+        }
+       // printDist(stack,stack[f].dist);
+        f++;
+        //cout<<"F= "<<f<<endl;
+        //printStack(stack);
+        
+    }while(f <= stack.size()-1);
+    
+    return -1;
+}
